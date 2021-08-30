@@ -34,14 +34,9 @@ export class TodoService {
    */
   public delete(id: number): void {
     const todos = this.findAll();
-
-    for(let index in todos) {
-      if(todos[index].id == id) {
-        todos[index] = undefined;
-        break;
-      }
-    }
-
+    const todo = this.findById(id);
+    
+    todos.splice(todos.indexOf(todo), 1);
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
   }
 
