@@ -1,0 +1,26 @@
+<div class="todo-pagination-container">
+  <button mat-stroked-button [routerLink]="['/items', currentRouteId - 1]"><mat-icon>chevron_left</mat-icon> Vorheriger Eintrag</button>
+  <button mat-stroked-button [routerLink]="['/']"><mat-icon>view_list</mat-icon> Zur Startseite</button>
+  <button mat-stroked-button [routerLink]="['/items', currentRouteId + 1]">Nächster Eintrag <mat-icon>chevron_right</mat-icon></button>
+</div>
+
+<mat-divider class="layout-divider"></mat-divider>
+
+<div *ngIf="!show404">
+  <div class="todo-info-container">
+    <h5>Eintrag ID #{{ todoData.id }}</h5>
+    <h1>{{ todoData.title }}</h1>
+
+    {{ todoData.description }}
+  </div>
+  <!--<mat-card class="todo-info-container mat-elevation-z0">
+        
+  </mat-card>-->
+
+</div>
+
+<div *ngIf="show404">
+  <app-error404 [lastItemId]="currentRouteId"></app-error404>
+</div>
+
+

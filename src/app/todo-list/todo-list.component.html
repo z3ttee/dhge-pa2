@@ -1,0 +1,15 @@
+<div class="todo-pagination-container">
+  <button mat-stroked-button color="success" (click)="openCreateDialog()"><mat-icon>add</mat-icon> Erstellen</button>
+  <button mat-stroked-button color="warn"><mat-icon>delete</mat-icon></button>
+</div>
+<mat-divider class="layout-divider"></mat-divider>
+
+<mat-list role="list" [disableRipple]="false">
+    <div mat-subheader>Dringend</div>
+    <app-todo-item *ngFor="let todo of todos" [todoData]="todo" [routerLink]="['/items', todo.id]"></app-todo-item>
+    <p *ngIf="todos.length <= 0">Keine Ergebnisse gefunden</p>
+
+    <div mat-subheader>Andere Todos</div>
+    <app-todo-item *ngFor="let todo of todos" [todoData]="todo" [routerLink]="['/items', todo.id]"></app-todo-item>
+    <p *ngIf="todos.length <= 0">Keine Ergebnisse gefunden</p>
+</mat-list>
