@@ -8,10 +8,19 @@
 
 <div *ngIf="!show404">
   <div class="todo-info-container">
+    <div class="todo-actions">
+        <button mat-stroked-button (click)="editItem()"><mat-icon>edit</mat-icon> Bearbeiten</button>
+        <button mat-stroked-button color="warn" (click)="deleteItem()"><mat-icon>delete</mat-icon> Löschen</button>
+    </div>
+    
+    <mat-divider class="layout-divider"></mat-divider>
+    
     <h5>Eintrag ID #{{ todoData.id }}</h5>
     <h1>{{ todoData.title }}</h1>
 
-    {{ todoData.description }}
+    <mat-divider class="layout-divider"></mat-divider>
+
+    <p [innerText]="todoData.description || 'Keine Beschreibung gefunden'"></p>
   </div>
   <!--<mat-card class="todo-info-container mat-elevation-z0">
         

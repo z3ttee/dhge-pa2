@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { TodoItem } from '../models/todo.model';
 import { TodoService } from '../services/todo.service';
+import { Router } from '@angular/router';
+import { TodoCreateComponent } from '../todo-create/todo-create.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-todo-info',
@@ -21,7 +24,10 @@ export class TodoInfoComponent implements OnInit {
 
     // We need to read the TODO Item ID from the route, so we have to inject
     // the currently activated route
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -45,6 +51,30 @@ export class TodoInfoComponent implements OnInit {
           this.show404 = false;
         }
     })    
+  }
+
+  public deleteItem() {
+    this.todoService.delete(this.todoData.id)   
+    this.router.navigate(['/'])
+  }
+
+  public editItem() {
+    this.openEditDialog();
+  }
+
+  public openEditDialog() {
+    const dialogRef = this.dialog.open(TodoCreateComponent, {
+      width: '480px',
+      data: {
+        todo: {...this.todoData}
+      } 
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.todoService.update(this.todoData.id, result)
+      }
+    });
   }
 
 }

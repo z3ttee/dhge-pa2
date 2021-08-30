@@ -1,4 +1,4 @@
-<mat-list-item class="todo-item-wrapper" matRipple>
+<mat-list-item class="todo-item-wrapper" matRipple [routerLink]="['items/', todoData.id]">
     <div mat-line>{{ todoData?.title }}</div>
     <div mat-line>{{ todoData?.description }}</div>
 
@@ -6,9 +6,4 @@
         <mat-chip *ngIf="isExpiring" [disableRipple]="true" [selectable]="false"><mat-icon matChipAvatar>history</mat-icon>Läuft ab...</mat-chip>
         <mat-chip *ngIf="todoData?.tasks && todoData?.tasks?.length > 0" [disableRipple]="true" [selectable]="false"><mat-icon matChipAvatar>task_alt</mat-icon>{{ tasksDone }} / {{ tasksAmount }}</mat-chip>
     </mat-chip-list>
-
-    <div>
-        <button mat-stroked-button mat-icon-button (click)="editItem($event)"><mat-icon>edit</mat-icon></button>
-        <button mat-stroked-button mat-icon-button color="warn" (click)="deleteItem()"><mat-icon>delete</mat-icon></button>
-    </div>
 </mat-list-item>

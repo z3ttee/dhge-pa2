@@ -45,6 +45,7 @@ export class TodoService {
    */
   public clear(): void {
     localStorage.removeItem(TODO_LIST_STORAGE_KEY);
+    localStorage.removeItem(TODO_NEXT_ID)
   }
 
   /**
@@ -56,7 +57,7 @@ export class TodoService {
     const todos = this.findAll();
     const todo = new TodoItem(this.nextIncrementedId(), item);
 
-    todos.push(todo);
+    todos.push(this.validateTodo(todo));
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
 
     return todo;
@@ -71,18 +72,16 @@ export class TodoService {
   public update(id: number, item: TodoItemDTO): TodoItem {
     const todos = this.findAll();
     const todo = this.findById(id);
+    if(!todo) return null;
+
+    const oldTodoIndex = todos.findIndex((value) => value.id == id)
+
     todo.title = item.title;
     todo.description = item.description;
     todo.deadline = item.deadline;
     todo.tasks = item.tasks;
 
-    for(let t of todos) {
-      if(t.id == id) {
-        t = todo;
-        break;
-      }
-    }
-
+    todos[oldTodoIndex] = this.validateTodo(todo);
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
     return todo;
   }
@@ -92,10 +91,15 @@ export class TodoService {
    * @returns Next id as number
    */
   public nextIncrementedId(): number {
-    let nextId: number = Number(localStorage.getItem(TODO_NEXT_ID)) || -1;
+    let nextId: number = Number(localStorage.getItem(TODO_NEXT_ID) || -1) ;
     ++nextId;
 
     localStorage.setItem(TODO_NEXT_ID, nextId.toString())
     return nextId;
+  }
+
+  private validateTodo(item: TodoItem): TodoItem {
+    if(!item.title) item.title = "Neues TODO-Element " + (item.id + 1);
+    return item;
   }
 }

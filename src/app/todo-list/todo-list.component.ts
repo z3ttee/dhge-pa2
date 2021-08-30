@@ -12,12 +12,20 @@ import { TodoCreateComponent } from '../todo-create/todo-create.component';
 export class TodoListComponent implements OnInit {
 
   todos: TodoItem[];
+  todosDeadlined: TodoItem[];
+  otherTodos: TodoItem[];
 
-  constructor(private todoService: TodoService, private dialog: MatDialog) { 
+  constructor(private todoService: TodoService, private dialog: MatDialog) { }
+
+  public ngOnInit(): void {
     this.todos = this.todoService.findAll();
+
+    this.todosDeadlined = this.todos.filter((todo) => todo.deadline);
+    this.otherTodos = this.todos.filter((todo) => !todo.deadline);
   }
 
-  ngOnInit(): void {
+  public deleteAll() {
+    this.todoService.clear();
   }
 
   public openCreateDialog() {
@@ -29,7 +37,9 @@ export class TodoListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.todoService.add(result)
+      if(result) {
+        this.todoService.add(result)
+      }
     });
   }
 
