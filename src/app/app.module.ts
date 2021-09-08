@@ -20,8 +20,6 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatInputModule} from '@angular/material/input';
 import {MatDialogModule} from '@angular/material/dialog';
 
-// Pipes
-import { TodoInfoPipePipe } from './pipes/todo-info-pipe.pipe';
 import { TodoInfoComponent } from './todo-info/todo-info.component';
 import { Error404Component } from './error404/error404.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -34,7 +32,6 @@ import { FormsModule } from '@angular/forms';
     TodoListComponent,
     TodoItemComponent,
     TodoItemComponent,
-    TodoInfoPipePipe,
     TodoInfoComponent,
     TodoInfoComponent,
     Error404Component,

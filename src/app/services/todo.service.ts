@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { TodoItem, TodoItemDTO } from '../models/todo.model';
+import { filter, first, map } from "rxjs/operators"
 
 const TODO_LIST_STORAGE_KEY = "todoList"
 const TODO_NEXT_ID = "lastItemId"
@@ -9,7 +11,13 @@ const TODO_NEXT_ID = "lastItemId"
 })
 export class TodoService {
 
-  constructor() { }
+  private _todosBehaviourSubj: BehaviorSubject<TodoItem[]> = new BehaviorSubject([])
+  public readonly todos: Observable<TodoItem[]> = this._todosBehaviourSubj.asObservable();
+
+  constructor() { 
+    // Initially load the data into the behaviour subject
+    this._todosBehaviourSubj.next(this.findAll())
+  }
 
   /**
    * Find all items
@@ -24,8 +32,16 @@ export class TodoService {
    * @param id Id to search for
    * @returns TodoItem object
    */
-  public findById(id: number): TodoItem {
-    return this.findAll().find((todo) => todo.id == id);
+  public findById(id: number): Observable<TodoItem> {
+    /* This is how it looked before making 
+       the add() function reactive
+
+        return this.findAll().find((todo) => todo.id == id);
+    */
+
+    return this._todosBehaviourSubj.pipe(
+      map((todos) => todos.find((todo) => todo.id == id))
+    );
   }
 
   /**
@@ -36,7 +52,7 @@ export class TodoService {
     const todos = this.findAll();
     const todo = this.findById(id);
     
-    todos.splice(todos.indexOf(todo), 1);
+    // todos.splice(todos.indexOf(todo), 1);
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
   }
 
@@ -44,6 +60,10 @@ export class TodoService {
    * Delete all items
    */
   public clear(): void {
+    // Adding this line makes the 
+    // application aware of the clear action
+    this._todosBehaviourSubj.next([])
+
     localStorage.removeItem(TODO_LIST_STORAGE_KEY);
     localStorage.removeItem(TODO_NEXT_ID)
   }
@@ -54,11 +74,25 @@ export class TodoService {
    * @returns TodoItem object
    */
   public add(item: TodoItemDTO): TodoItem {
-    const todos = this.findAll();
+    /* This is how it looked before making 
+       the add() function reactive
+
+        const todos = this.findAll();
+        const todo = new TodoItem(this.nextIncrementedId(), item);
+
+        todos.push(this.validateTodo(todo));
+        localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
+
+        return todo;
+    */
+
+    // Reactive solution:
     const todo = new TodoItem(this.nextIncrementedId(), item);
 
-    todos.push(this.validateTodo(todo));
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
+    this._todosBehaviourSubj.next([ ...this._todosBehaviourSubj.getValue(), this.validateTodo(todo) ])
+    this.todos.subscribe((list) => {
+      localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
+    })
 
     return todo;
   }
@@ -69,21 +103,23 @@ export class TodoService {
    * @param item Updated item data
    * @returns 
    */
-  public update(id: number, item: TodoItemDTO): TodoItem {
-    const todos = this.findAll();
-    const todo = this.findById(id);
-    if(!todo) return null;
+  public update(id: number, item: TodoItemDTO) {
+    this.findById(id).subscribe((todo) => {
+      console.log("updating...", todo)
+      const todoList = this._todosBehaviourSubj.getValue();
+      console.log("updating...", todoList)
+      if(!todo) return null;
 
-    const oldTodoIndex = todos.findIndex((value) => value.id == id)
-
-    todo.title = item.title;
-    todo.description = item.description;
-    todo.deadline = item.deadline;
-    todo.tasks = item.tasks;
-
-    todos[oldTodoIndex] = this.validateTodo(todo);
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
-    return todo;
+      const oldTodoIndex = todoList.findIndex((value) => value.id == id)
+  
+      todo.title = item.title;
+      todo.description = item.description;
+      todo.deadline = item.deadline;
+      todo.tasks = item.tasks;
+  
+      todoList[oldTodoIndex] = this.validateTodo(todo);
+      localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todoList));
+    })
   }
 
   /**

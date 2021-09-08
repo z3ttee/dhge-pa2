@@ -5,6 +5,7 @@ import { TodoService } from '../services/todo.service';
 import { Router } from '@angular/router';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-todo-info',
@@ -13,7 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class TodoInfoComponent implements OnInit {
 
-  public todoData: TodoItem = null;
+  public todoData: Observable<TodoItem>;
   public currentRouteId: number = 0;
   public show404: boolean = false;
 
@@ -40,7 +41,8 @@ export class TodoInfoComponent implements OnInit {
 
         // Here we use our injected service to fetch a todo 
         // item from the list that matches the given id
-        this.todoData = this.todoService.findById(itemId);
+        // Old non reactive: this.todoData = this.todoService.findById(itemId);
+        this.todoData = this.todoService.findById(itemId)
 
         // This is an optional check if the todo item was found. If it does
         // not exist we show an error page of 404 Not Found.
@@ -54,7 +56,7 @@ export class TodoInfoComponent implements OnInit {
   }
 
   public deleteItem() {
-    this.todoService.delete(this.todoData.id)   
+    // this.todoService.delete(this.todoData.id)   
     this.router.navigate(['/'])
   }
 
@@ -72,7 +74,9 @@ export class TodoInfoComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.todoService.update(this.todoData.id, result)
+        this.todoData.subscribe((todo) => {
+          this.todoService.update(todo.id, result)
+        })
       }
     });
   }

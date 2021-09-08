@@ -15,7 +15,7 @@ export class TodoListComponent implements OnInit {
   todosDeadlined: TodoItem[];
   otherTodos: TodoItem[];
 
-  constructor(private todoService: TodoService, private dialog: MatDialog) { }
+  constructor(public todoService: TodoService, private dialog: MatDialog) { }
 
   public ngOnInit(): void {
     this.todos = this.todoService.findAll();

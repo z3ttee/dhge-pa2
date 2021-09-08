@@ -15,12 +15,12 @@
     
     <mat-divider class="layout-divider"></mat-divider>
     
-    <h5>Eintrag ID #{{ todoData.id }}</h5>
-    <h1>{{ todoData.title }}</h1>
+    <h5>Eintrag ID #{{ (todoData | async).id }}</h5>
+    <h1>{{ (todoData | async).title }}</h1>
 
     <mat-divider class="layout-divider"></mat-divider>
 
-    <p [innerText]="todoData.description || 'Keine Beschreibung gefunden'"></p>
+    <p [innerText]="(todoData | async).description"></p>
   </div>
   <!--<mat-card class="todo-info-container mat-elevation-z0">
         

@@ -23,7 +23,6 @@ export class TodoCreateComponent implements OnInit {
     if(this.data.todo) {
       this.todo = this.data.todo;
     }
-    
   }
 
   public onDismiss() {

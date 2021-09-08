@@ -6,8 +6,8 @@
 
 <mat-list role="list">
     <div mat-subheader>Dringend</div>
-    <app-todo-item *ngFor="let todo of todosDeadlined" [todoData]="todo"></app-todo-item>
-    <mat-list-item *ngIf="todosDeadlined.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>
+    <app-todo-item *ngFor="let todo of todoService.todos | async" [todoData]="todo"></app-todo-item>
+    <!--<mat-list-item *ngIf="todoService.todos.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>-->
 
     <div mat-subheader>Andere Todos</div>
     <app-todo-item *ngFor="let todo of otherTodos" [todoData]="todo"></app-todo-item>
