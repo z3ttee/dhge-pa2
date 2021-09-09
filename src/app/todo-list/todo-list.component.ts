@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { TodoItem } from '../models/todo.model';
 import { TodoService } from '../services/todo.service';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
@@ -11,17 +12,24 @@ import { TodoCreateComponent } from '../todo-create/todo-create.component';
 })
 export class TodoListComponent implements OnInit {
 
-  todos: TodoItem[];
+  // Expose observable to use it in the .component.html file for data-binding
+  public items$: Observable<Array<TodoItem>>;
+  
   todosDeadlined: TodoItem[];
   otherTodos: TodoItem[];
 
   constructor(public todoService: TodoService, private dialog: MatDialog) { }
 
   public ngOnInit(): void {
-    this.todos = this.todoService.findAll();
+    // Trigger fetch process
+    this.todoService.findAll();
 
-    this.todosDeadlined = this.todos.filter((todo) => todo.deadline);
-    this.otherTodos = this.todos.filter((todo) => !todo.deadline);
+    // Store the observable of the service 
+    // inside the component class
+    this.items$ = this.todoService.items;
+
+    // this.todosDeadlined = this.todos.filter((todo) => todo.deadline);
+    // this.otherTodos = this.todos.filter((todo) => !todo.deadline);
   }
 
   public deleteAll() {

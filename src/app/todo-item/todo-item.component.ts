@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { TodoItem } from '../models/todo.model';
-import { TodoService } from '../services/todo.service';
 
 @Component({
   selector: 'app-todo-item',
@@ -10,25 +9,17 @@ import { TodoService } from '../services/todo.service';
 export class TodoItemComponent implements OnInit {
 
   @Input()
-  public todoData: TodoItem = null;
+  public item: TodoItem = null;
 
   public isExpiring: boolean = false;
   public tasksAmount: number = 0;
   public tasksDone: number = 0;
 
-  constructor(private todoService: TodoService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.tasksAmount = this.todoData?.tasks?.length || 0;
-    this.tasksDone = this.todoData?.tasks?.filter((value) => value.status == "done").length
-  }
-
-  public deleteItem(): void {
-    this.todoService.delete(this.todoData.id);
-  }
-
-  public editItem(event: UIEvent): void {
-    console.log("edit item...")
+    this.tasksAmount = this.item?.tasks?.length || 0;
+    this.tasksDone = this.item?.tasks?.filter((value) => value.status == "done").length
   }
 
 }

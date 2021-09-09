@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { TodoItem } from '../models/todo.model';
-import { TodoService } from '../services/todo.service';
 import { Router } from '@angular/router';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
+import { TodoService } from '../services/todo.service';
 
 @Component({
   selector: 'app-todo-info',
@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 })
 export class TodoInfoComponent implements OnInit {
 
-  public todoData: Observable<TodoItem>;
+  public todo: TodoItem;
   public currentRouteId: number = 0;
   public show404: boolean = false;
 
@@ -42,21 +42,23 @@ export class TodoInfoComponent implements OnInit {
         // Here we use our injected service to fetch a todo 
         // item from the list that matches the given id
         // Old non reactive: this.todoData = this.todoService.findById(itemId);
-        this.todoData = this.todoService.findById(itemId)
+        this.todoService.findById(itemId).subscribe((item) => {
+          this.todo = item;
 
-        // This is an optional check if the todo item was found. If it does
-        // not exist we show an error page of 404 Not Found.
-        if(!this.todoData) {
-          this.show404 = true;
-        } else {
-          this.currentRouteId = itemId;
-          this.show404 = false;
-        }
+          // This is an optional check if the todo item was found. If it does
+          // not exist we show an error page of 404 Not Found.
+          if(!this.todo) {
+            this.show404 = true;
+          } else {
+            this.currentRouteId = itemId;
+            this.show404 = false;
+          }
+        })
     })    
   }
 
   public deleteItem() {
-    // this.todoService.delete(this.todoData.id)   
+    this.todoService.delete(this.todo.id)
     this.router.navigate(['/'])
   }
 
@@ -68,15 +70,13 @@ export class TodoInfoComponent implements OnInit {
     const dialogRef = this.dialog.open(TodoCreateComponent, {
       width: '480px',
       data: {
-        todo: {...this.todoData}
+        todo: {...this.todo }
       } 
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.todoData.subscribe((todo) => {
-          this.todoService.update(todo.id, result)
-        })
+        this.todoService.update(this.todo.id, result);
       }
     });
   }

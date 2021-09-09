@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { filter, find, map, tap } from 'rxjs/operators';
 import { TodoItem, TodoItemDTO } from '../models/todo.model';
-import { filter, first, map } from "rxjs/operators"
 
 const TODO_LIST_STORAGE_KEY = "todoList"
 const TODO_NEXT_ID = "lastItemId"
@@ -11,115 +11,111 @@ const TODO_NEXT_ID = "lastItemId"
 })
 export class TodoService {
 
-  private _todosBehaviourSubj: BehaviorSubject<TodoItem[]> = new BehaviorSubject([])
-  public readonly todos: Observable<TodoItem[]> = this._todosBehaviourSubj.asObservable();
+  // BehaviourObject to manage data changes (pushing new data etc.)
+  // This is private because we only want to do changes inside the
+  // service itself and not from outside. 
+  private _items$ = new BehaviorSubject<Array<TodoItem>>([]);
+  
+  // Expose the BehaviourObject's Observable, to react on changes outside of the service.
+  public readonly items: Observable<Array<TodoItem>> = this._items$.asObservable();
 
-  constructor() { 
-    // Initially load the data into the behaviour subject
-    this._todosBehaviourSubj.next(this.findAll())
-  }
-
-  /**
-   * Find all items
-   * @returns Array of TodoItems
-   */
-  public findAll(): TodoItem[] {
-    return JSON.parse(localStorage.getItem(TODO_LIST_STORAGE_KEY) || "[]") as TodoItem[]
-  }
+  constructor() {}
 
   /**
-   * Find an item by its id
-   * @param id Id to search for
-   * @returns TodoItem object
+   * Fetch all items from the browser's built in localStorage asynchronously.
+   * @returns Observable of Type Array of type TodoItem
    */
+  public findAll(): Subscription {
+    // Making an observable using of(). Observables need to be subscribed to, otherwise they
+    // will never be active or even executed. So no data is fetched without subscribing to
+    // an Observable.
+    return of(JSON.parse(localStorage.getItem(TODO_LIST_STORAGE_KEY)) || []).subscribe((value) => {
+      // Push data to the BehaviourSubject, so that all subscribers to it will be triggered.      
+      console.log(value)
+      this._items$.next(value);
+    });
+  }
+
   public findById(id: number): Observable<TodoItem> {
-    /* This is how it looked before making 
-       the add() function reactive
-
-        return this.findAll().find((todo) => todo.id == id);
-    */
-
-    return this._todosBehaviourSubj.pipe(
-      map((todos) => todos.find((todo) => todo.id == id))
-    );
+    return this._items$.pipe(
+      map((list) => {
+        return list.find((item) => item.id == id)
+      })
+    )
   }
 
   /**
-   * Delete item by id
+   * Add new todo item.
+   * @param data Item data to save
+   */
+  public add(data: TodoItemDTO): TodoItem {
+    // Get current values from the behaviour subject
+    const list = this._items$.getValue();
+    const item = new TodoItem(this.nextIncrementedId(), data);
+
+    list.push(this.validateTodo(item));
+    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
+
+    // Push changes to the behaviour subject to trigger subscribers
+    this._items$.next(list);
+    return item;
+  }
+
+  /**
+   * Update existing items.
+   * @param id Id of the item to be edited
+   * @param data Updated data
+   * @returns Instance of TodoItem
+   */
+  public update(id: number, data: TodoItemDTO): TodoItem {
+    // Get current values from the behaviour subject
+    const list = this._items$.getValue();
+
+    const item = list.find((value) => value.id == id);
+    if(!item) return null;
+
+    item.title = data.title;
+    item.description = data.description;
+    item.deadline = data.deadline;
+    item.tasks = data.tasks;
+
+    // Save updated item
+    list[list.indexOf(item)] = this.validateTodo(item);
+    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
+    
+    // Push changes to the behaviour subject to trigger subscribers
+    this._items$.next(list);
+    return item;
+  }
+
+  /**
+   * Delete item by its id
    * @param id Id of item to delete
    */
   public delete(id: number): void {
-    const todos = this.findAll();
-    const todo = this.findById(id);
-    
-    // todos.splice(todos.indexOf(todo), 1);
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
+    // Get current values from the behaviour subject
+    const list = this._items$.getValue();
+
+    const item = list.find((value) => value.id == id);
+    if(!item) return null;
+
+    // Delete item by setting value at index to undefined
+    list.splice(list.indexOf(item), 1)
+    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
+
+    // Push changes to the behaviour subject to trigger subscribers
+    this._items$.next(list);
   }
 
   /**
    * Delete all items
    */
-  public clear(): void {
+   public clear(): void {
     // Adding this line makes the 
     // application aware of the clear action
-    this._todosBehaviourSubj.next([])
-
+    this._items$.next([])
     localStorage.removeItem(TODO_LIST_STORAGE_KEY);
     localStorage.removeItem(TODO_NEXT_ID)
-  }
-
-  /**
-   * Add item
-   * @param item Item to add
-   * @returns TodoItem object
-   */
-  public add(item: TodoItemDTO): TodoItem {
-    /* This is how it looked before making 
-       the add() function reactive
-
-        const todos = this.findAll();
-        const todo = new TodoItem(this.nextIncrementedId(), item);
-
-        todos.push(this.validateTodo(todo));
-        localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todos));
-
-        return todo;
-    */
-
-    // Reactive solution:
-    const todo = new TodoItem(this.nextIncrementedId(), item);
-
-    this._todosBehaviourSubj.next([ ...this._todosBehaviourSubj.getValue(), this.validateTodo(todo) ])
-    this.todos.subscribe((list) => {
-      localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
-    })
-
-    return todo;
-  }
-
-  /**
-   * Update item by its id
-   * @param id Id to search for
-   * @param item Updated item data
-   * @returns 
-   */
-  public update(id: number, item: TodoItemDTO) {
-    this.findById(id).subscribe((todo) => {
-      console.log("updating...", todo)
-      const todoList = this._todosBehaviourSubj.getValue();
-      console.log("updating...", todoList)
-      if(!todo) return null;
-
-      const oldTodoIndex = todoList.findIndex((value) => value.id == id)
-  
-      todo.title = item.title;
-      todo.description = item.description;
-      todo.deadline = item.deadline;
-      todo.tasks = item.tasks;
-  
-      todoList[oldTodoIndex] = this.validateTodo(todo);
-      localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(todoList));
-    })
   }
 
   /**
@@ -127,15 +123,21 @@ export class TodoService {
    * @returns Next id as number
    */
   public nextIncrementedId(): number {
-    let nextId: number = Number(localStorage.getItem(TODO_NEXT_ID) || -1) ;
+    let nextId: number = Number(localStorage.getItem(TODO_NEXT_ID) || 0) ;
     ++nextId;
 
     localStorage.setItem(TODO_NEXT_ID, nextId.toString())
     return nextId;
   }
 
+  /**
+   * Validate an item. Creates a default title if none exists.
+   * @param item Data to validate
+   * @returns Instance of TodoItem
+   */
   private validateTodo(item: TodoItem): TodoItem {
-    if(!item.title) item.title = "Neues TODO-Element " + (item.id + 1);
+    if(!item.title) item.title = "Neues TODO-Element " + item.id;
     return item;
   }
+
 }
