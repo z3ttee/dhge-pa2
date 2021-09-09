@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { TodoService } from '../services/todo.service';
 
 @Component({
@@ -6,17 +7,26 @@ import { TodoService } from '../services/todo.service';
   templateUrl: './error404.component.html',
   styleUrls: ['./error404.component.scss']
 })
-export class Error404Component implements OnInit {
+export class Error404Component {
 
   @Input()
-  public lastItemId: number = -1;
+  public navigateToItem?: number = 0;
 
-  constructor(private todoService: TodoService) { }
+  constructor(private todoService: TodoService, private router: Router) { }
 
-  ngOnInit(): void {
-    if(this.lastItemId == -1) {
-      this.lastItemId = this.todoService.findAll()[0].id
+  public navigateBack() {
+    if(!this.navigateToItem) {
+      const firstItem = this.todoService.findFirst();
+
+      if(!firstItem) {
+        this.router.navigate(["/"])
+        return;
+      }
+
+      this.navigateToItem = firstItem.id;
     }
+
+    this.router.navigate(["/items", this.navigateToItem])
   }
 
 }

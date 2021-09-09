@@ -14,7 +14,7 @@ import { TodoService } from '../services/todo.service';
 })
 export class TodoInfoComponent implements OnInit {
 
-  public todo: TodoItem;
+  public item: TodoItem;
   public currentRouteId: number = 0;
   public show404: boolean = false;
 
@@ -42,23 +42,32 @@ export class TodoInfoComponent implements OnInit {
         // Here we use our injected service to fetch a todo 
         // item from the list that matches the given id
         // Old non reactive: this.todoData = this.todoService.findById(itemId);
-        this.todoService.findById(itemId).subscribe((item) => {
-          this.todo = item;
+        this.item = this.todoService.findById(itemId);
+
+        if(!this.item) {
+          this.show404 = true;
+        } else {
+          this.currentRouteId = itemId;
+          this.show404 = false;
+        }
+        /*this.todoService.findById(itemId).subscribe((item) => {
+          console.log(item)
+          this.item = item;
 
           // This is an optional check if the todo item was found. If it does
           // not exist we show an error page of 404 Not Found.
-          if(!this.todo) {
+          if(!this.item) {
             this.show404 = true;
           } else {
             this.currentRouteId = itemId;
             this.show404 = false;
           }
-        })
+        })*/
     })    
   }
 
   public deleteItem() {
-    this.todoService.delete(this.todo.id)
+    this.todoService.delete(this.item.id)
     this.router.navigate(['/'])
   }
 
@@ -70,13 +79,13 @@ export class TodoInfoComponent implements OnInit {
     const dialogRef = this.dialog.open(TodoCreateComponent, {
       width: '480px',
       data: {
-        todo: {...this.todo }
+        todo: {...this.item }
       } 
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.todoService.update(this.todo.id, result);
+        this.todoService.update(this.item.id, result);
       }
     });
   }

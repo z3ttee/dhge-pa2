@@ -5,7 +5,7 @@
 <mat-divider class="layout-divider"></mat-divider>
 
 <mat-list role="list">
-    <div mat-subheader>Dringend</div>
+    <div mat-subheader>Alle TODOs</div>
     <app-todo-item *ngFor="let todo of items$ | async" [item]="todo"></app-todo-item>
     <mat-list-item *ngIf="(items$ | async)?.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>
 

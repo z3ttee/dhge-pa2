@@ -15,21 +15,17 @@
     
     <mat-divider class="layout-divider"></mat-divider>
     
-    <h5>Eintrag ID #{{ todo.id }}</h5>
-    <h1>{{ todo.title }}</h1>
+    <h5>Eintrag ID #{{ item.id }}</h5>
+    <h1>{{ item.title }}</h1>
 
     <mat-divider class="layout-divider"></mat-divider>
 
-    <p [innerText]="todo.description"></p>
+    <p>{{ item.description || "Keine Beschreibung vorhanden" }}</p>
   </div>
-  <!--<mat-card class="todo-info-container mat-elevation-z0">
-        
-  </mat-card>-->
-
 </div>
 
 <div *ngIf="show404">
-  <app-error404 [lastItemId]="currentRouteId"></app-error404>
+  <app-error404 [navigateToItem]="currentRouteId"></app-error404>
 </div>
 
 

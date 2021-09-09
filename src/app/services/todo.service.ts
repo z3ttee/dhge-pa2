@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { filter, find, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { TodoItem, TodoItemDTO } from '../models/todo.model';
 
 const TODO_LIST_STORAGE_KEY = "todoList"
 const TODO_NEXT_ID = "lastItemId"
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
+
 })
 export class TodoService {
-
   // BehaviourObject to manage data changes (pushing new data etc.)
   // This is private because we only want to do changes inside the
   // service itself and not from outside. 
@@ -19,7 +19,9 @@ export class TodoService {
   // Expose the BehaviourObject's Observable, to react on changes outside of the service.
   public readonly items: Observable<Array<TodoItem>> = this._items$.asObservable();
 
-  constructor() {}
+  constructor() {
+    this.findAll();
+  }
 
   /**
    * Fetch all items from the browser's built in localStorage asynchronously.
@@ -31,17 +33,25 @@ export class TodoService {
     // an Observable.
     return of(JSON.parse(localStorage.getItem(TODO_LIST_STORAGE_KEY)) || []).subscribe((value) => {
       // Push data to the BehaviourSubject, so that all subscribers to it will be triggered.      
-      console.log(value)
       this._items$.next(value);
     });
   }
 
-  public findById(id: number): Observable<TodoItem> {
-    return this._items$.pipe(
-      map((list) => {
-        return list.find((item) => item.id == id)
-      })
-    )
+  /**
+   * Find an element by its id
+   * @param id Id of the element
+   * @returns Observable of type TodoItem
+   */
+  public findById(id: number): TodoItem {
+    return this._items$.getValue().find(((item) => item.id == id));
+  }
+
+  /**
+   * Find first element in list.
+   * @returns Observable of type TodoItem
+   */
+  public findFirst(): TodoItem {
+    return this._items$.getValue()[0];
   }
 
   /**

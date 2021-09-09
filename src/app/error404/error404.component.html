@@ -3,7 +3,7 @@
 
     <h2>Da ist etwas schief gelaufen.</h2>
     <p>Der von dir gesuchte Eintrag konnte nicht gefunden werden.</p>
-    <button mat-stroked-button [routerLink]="['/items', lastItemId]">
+    <button mat-stroked-button (click)="navigateBack()">
         <mat-icon>undo</mat-icon> Zurück zum letzten Eintrag
     </button>
 </div>
