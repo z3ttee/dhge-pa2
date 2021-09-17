@@ -1,6 +1,6 @@
 {
-  "name": "todoApp",
-  "short_name": "todoApp",
+  "name": "DHGE Todo PA2",
+  "short_name": "DHGE Todo",
   "display": "standalone",
   "start_url": "./",
   "icons": [
