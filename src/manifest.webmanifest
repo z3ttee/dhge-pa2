@@ -1,0 +1,14 @@
+{
+  "name": "todoApp",
+  "short_name": "todoApp",
+  "display": "standalone",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "assets/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}
