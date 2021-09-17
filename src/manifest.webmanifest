@@ -3,6 +3,7 @@
   "short_name": "DHGE Todo",
   "display": "standalone",
   "start_url": "./",
+  "theme_color": "#673AB7",
   "icons": [
     {
       "src": "assets/icons/icon-512x512.png",
