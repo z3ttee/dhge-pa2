@@ -1,6 +1,12 @@
 <mat-toolbar color="primary">
-  <img [routerLink]="['/']" class="dhge-logo" src="https://pbs.twimg.com/profile_images/1016937763374096384/Of5eQEu8_400x400.jpg">
-  <span [routerLink]="['/']">DHGE Todo Application PA2</span>
+    <div>
+      <img [routerLink]="['/']" class="dhge-logo" src="https://pbs.twimg.com/profile_images/1016937763374096384/Of5eQEu8_400x400.jpg">
+      <span [routerLink]="['/']">DHGE Todo Application PA2</span>
+    </div>
+    <span class="flexExpand"></span>
+    <div>
+      <button mat-button (click)="goToRepo()"><mat-icon>code</mat-icon> Quellcode</button>
+    </div>
 </mat-toolbar>
 
 <div class="content-container">
