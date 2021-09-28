@@ -12,7 +12,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { TodoItemComponent } from './todo-item/todo-item.component';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -46,7 +45,6 @@ import { environment } from '../environments/environment';
     MatToolbarModule,
     MatListModule,
     MatCardModule,
-    MatChipsModule,
     MatIconModule,
     MatRippleModule,
     MatButtonModule,

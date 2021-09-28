@@ -1,9 +1,4 @@
 <mat-list-item class="todo-item-wrapper" matRipple [routerLink]="['items/', item.id]">
     <div mat-line>{{ item?.title }}</div>
     <div mat-line>{{ item?.description }}</div>
-
-    <mat-chip-list>
-        <mat-chip *ngIf="isExpiring" [disableRipple]="true" [selectable]="false"><mat-icon matChipAvatar>history</mat-icon>Läuft ab...</mat-chip>
-        <mat-chip *ngIf="item?.tasks && item?.tasks?.length > 0" [disableRipple]="true" [selectable]="false"><mat-icon matChipAvatar>task_alt</mat-icon>{{ tasksDone }} / {{ tasksAmount }}</mat-chip>
-    </mat-chip-list>
 </mat-list-item>
