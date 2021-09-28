@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { TodoService } from '../services/todo.service';
+import { TodoServiceReactive } from '../services/todo.service';
 
 @Component({
   selector: 'app-todo-info',
@@ -21,7 +21,7 @@ export class TodoInfoComponent implements OnInit {
   constructor(
     // Use dependency injection to inject our service. 
     // This gurantees that we seperate ui and business logic.
-    private todoService: TodoService,
+    private todoService: TodoServiceReactive,
 
     // We need to read the TODO Item ID from the route, so we have to inject
     // the currently activated route

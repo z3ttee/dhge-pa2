@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { TodoItem } from '../models/todo.model';
-import { TodoService } from '../services/todo.service';
+import { TodoServiceReactive } from '../services/todo.service';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 
 @Component({
@@ -18,7 +18,7 @@ export class TodoListComponent implements OnInit {
   todosDeadlined: TodoItem[];
   otherTodos: TodoItem[];
 
-  constructor(public todoService: TodoService, private dialog: MatDialog) { }
+  constructor(public todoService: TodoServiceReactive, private dialog: MatDialog) { }
 
   public ngOnInit(): void {
     // Trigger fetch process

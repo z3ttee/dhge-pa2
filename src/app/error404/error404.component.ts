@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { TodoService } from '../services/todo.service';
+import { TodoServiceReactive } from '../services/todo.service';
 
 @Component({
   selector: 'app-error404',
@@ -12,7 +12,7 @@ export class Error404Component {
   @Input()
   public navigateToItem?: number = 0;
 
-  constructor(private todoService: TodoService, private router: Router) { }
+  constructor(private todoService: TodoServiceReactive, private router: Router) { }
 
   public navigateBack() {
     if(!this.navigateToItem) {
