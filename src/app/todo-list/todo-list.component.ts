@@ -14,9 +14,6 @@ export class TodoListComponent implements OnInit {
 
   // Expose observable to use it in the .component.html file for data-binding
   public items$: Observable<Array<TodoItem>>;
-  
-  todosDeadlined: TodoItem[];
-  otherTodos: TodoItem[];
 
   constructor(public todoService: TodoServiceReactive, private dialog: MatDialog) { }
 
@@ -27,9 +24,6 @@ export class TodoListComponent implements OnInit {
     // Store the observable of the service 
     // inside the component class
     this.items$ = this.todoService.items;
-
-    // this.todosDeadlined = this.todos.filter((todo) => todo.deadline);
-    // this.otherTodos = this.todos.filter((todo) => !todo.deadline);
   }
 
   public deleteAll() {
@@ -39,9 +33,7 @@ export class TodoListComponent implements OnInit {
   public openCreateDialog() {
     const dialogRef = this.dialog.open(TodoCreateComponent, {
       width: '480px',
-      data: {
-
-      }
+      data: {}
     });
 
     dialogRef.afterClosed().subscribe(result => {
