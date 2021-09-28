@@ -1,10 +1,14 @@
-<div class="todo-pagination-container">
+<div class="todo-pagination-container" *ngIf="!show404">
   <button mat-stroked-button [routerLink]="['/items', currentRouteId - 1]"><mat-icon>chevron_left</mat-icon> Vorheriger Eintrag</button>
   <button mat-stroked-button [routerLink]="['/']"><mat-icon>view_list</mat-icon> Zur Startseite</button>
   <button mat-stroked-button [routerLink]="['/items', currentRouteId + 1]">Nächster Eintrag <mat-icon>chevron_right</mat-icon></button>
+
+  <mat-divider class="layout-divider"></mat-divider>
 </div>
 
-<mat-divider class="layout-divider"></mat-divider>
+<div *ngIf="show404">
+  <app-error404 [navigateToItem]="currentRouteId"></app-error404>
+</div>
 
 <div *ngIf="!show404">
   <div class="todo-info-container">
@@ -22,10 +26,6 @@
 
     <p>{{ item.description || "Keine Beschreibung vorhanden" }}</p>
   </div>
-</div>
-
-<div *ngIf="show404">
-  <app-error404 [navigateToItem]="currentRouteId"></app-error404>
 </div>
 
 
