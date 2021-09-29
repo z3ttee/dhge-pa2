@@ -152,30 +152,21 @@ export class TodoServiceReactive {
   providedIn: 'root',
 })
 export class TodoServiceStatic {
-  // BehaviourObject to manage data changes (pushing new data etc.)
-  // This is private because we only want to do changes inside the
-  // service itself and not from outside. 
-  private _items$ = new BehaviorSubject<Array<TodoItem>>([]);
   
-  // Expose the BehaviourObject's Observable, to react on changes outside of the service.
-  public readonly items: Observable<Array<TodoItem>> = this._items$.asObservable();
+  public readonly items: TodoItem[] = [];
 
   constructor() {
-    this.findAll();
+    this.items = this.findAll();
   }
 
   /**
    * Fetch all items from the browser's built in localStorage asynchronously.
    * @returns Observable of Type Array of type TodoItem
    */
-  public findAll(): Subscription {
-    // Making an observable using of(). Observables need to be subscribed to, otherwise they
-    // will never be active or even executed. So no data is fetched without subscribing to
-    // an Observable.
-    return of(JSON.parse(localStorage.getItem(TODO_LIST_STORAGE_KEY)) || []).subscribe((value) => {
-      // Push data to the BehaviourSubject, so that all subscribers to it will be triggered.      
-      this._items$.next(value);
-    });
+  public findAll(): TodoItem[] {
+    // Get the data from the browser's localStorage and parse the received string
+    // An array results in the case of undefined or on successful parsing.
+    return JSON.parse(localStorage.getItem(TODO_LIST_STORAGE_KEY)) || []
   }
 
   /**
@@ -184,7 +175,7 @@ export class TodoServiceStatic {
    * @returns Observable of type TodoItem
    */
   public findById(id: number): TodoItem {
-    return this._items$.getValue().find(((item) => item.id == id));
+    return this.items.find(((item) => item.id == id));
   }
 
   /**
@@ -192,7 +183,7 @@ export class TodoServiceStatic {
    * @returns Observable of type TodoItem
    */
   public findFirst(): TodoItem {
-    return this._items$.getValue()[0];
+    return this.items[0];
   }
 
   /**
@@ -200,15 +191,14 @@ export class TodoServiceStatic {
    * @param data Item data to save
    */
   public add(data: TodoItemDTO): TodoItem {
-    // Get current values from the behaviour subject
-    const list = this._items$.getValue();
+    // Get current values from the class property
+    const list = this.items;
     const item = new TodoItem(this.nextIncrementedId(), data);
 
+    // Push changes to the static array of items. List is a reference
+    // of "this.items"
     list.push(this.validateTodo(item));
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
-
-    // Push changes to the behaviour subject to trigger subscribers
-    this._items$.next(list);
     return item;
   }
 
@@ -219,8 +209,8 @@ export class TodoServiceStatic {
    * @returns Instance of TodoItem
    */
   public update(id: number, data: TodoItemDTO): TodoItem {
-    // Get current values from the behaviour subject
-    const list = this._items$.getValue();
+    // Get current values from the class property
+    const list = this.items;
 
     const item = list.find((value) => value.id == id);
     if(!item) return null;
@@ -228,12 +218,10 @@ export class TodoServiceStatic {
     item.title = data.title;
     item.description = data.description;
 
-    // Save updated item
+    // Update changes and set at correct index of the static 
+    // array of items. List is a reference of "this.items"
     list[list.indexOf(item)] = this.validateTodo(item);
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
-    
-    // Push changes to the behaviour subject to trigger subscribers
-    this._items$.next(list);
     return item;
   }
 
@@ -242,27 +230,24 @@ export class TodoServiceStatic {
    * @param id Id of item to delete
    */
   public delete(id: number): void {
-    // Get current values from the behaviour subject
-    const list = this._items$.getValue();
+    // Get current values from the class property
+    const list = this.items;
 
     const item = list.find((value) => value.id == id);
     if(!item) return null;
 
     // Delete item by setting value at index to undefined
+    // Remember: "list" is a reference to "this.items"
     list.splice(list.indexOf(item), 1)
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
-
-    // Push changes to the behaviour subject to trigger subscribers
-    this._items$.next(list);
   }
 
   /**
    * Delete all items
    */
    public clear(): void {
-    // Adding this line makes the 
-    // application aware of the clear action
-    this._items$.next([])
+    // Delete all items
+    this.items.splice(0, this.items.length)
     localStorage.removeItem(TODO_LIST_STORAGE_KEY);
     localStorage.removeItem(TODO_NEXT_ID)
   }
