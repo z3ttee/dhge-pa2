@@ -72,7 +72,7 @@ export class TodoServiceReactive {
   public add(data: TodoItemDTO): TodoItem {
     // Get current values from the behaviour subject
     const list = this._items$.getValue();
-    const item = new TodoItem(this.nextIncrementedId(), data);
+    const item = new TodoItem(data.id || this.nextIncrementedId(), data);
 
     list.push(this.validateTodo(item));
     localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
@@ -165,12 +165,6 @@ export class TodoServiceReactive {
   providedIn: 'root',
 })
 export class TodoServiceStatic {
-  
-  public readonly items: TodoItem[] = [];
-
-  constructor() {
-    this.items = this.findAll();
-  }
 
   /**
    * Fetch all items from the browser's built in localStorage asynchronously.
@@ -188,7 +182,7 @@ export class TodoServiceStatic {
    * @returns Observable of type TodoItem
    */
   public findById(id: number): TodoItem {
-    return this.items.find(((item) => item.id == id));
+    return this.findAll().find(((item) => item.id == id));
   }
 
   /**
@@ -196,7 +190,7 @@ export class TodoServiceStatic {
    * @returns Observable of type TodoItem
    */
   public findFirst(): TodoItem {
-    return this.items[0];
+    return this.findAll()[0];
   }
 
   /**
@@ -205,13 +199,12 @@ export class TodoServiceStatic {
    */
   public add(data: TodoItemDTO): TodoItem {
     // Get current values from the class property
-    const list = this.items;
-    const item = new TodoItem(this.nextIncrementedId(), data);
+    const list = this.findAll();
+    const item = new TodoItem(data.id || this.nextIncrementedId(), data);
 
     // Push changes to the static array of items. List is a reference
     // of "this.items"
     list.push(this.validateTodo(item));
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
     return item;
   }
 
@@ -223,7 +216,7 @@ export class TodoServiceStatic {
    */
   public update(id: number, data: TodoItemDTO): TodoItem {
     // Get current values from the class property
-    const list = this.items;
+    const list = this.findAll();
 
     const item = list.find((value) => value.id == id);
     if(!item) return null;
@@ -234,7 +227,6 @@ export class TodoServiceStatic {
     // Update changes and set at correct index of the static 
     // array of items. List is a reference of "this.items"
     list[list.indexOf(item)] = this.validateTodo(item);
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
     return item;
   }
 
@@ -244,7 +236,7 @@ export class TodoServiceStatic {
    */
   public delete(id: number): void {
     // Get current values from the class property
-    const list = this.items;
+    const list = this.findAll();
 
     const item = list.find((value) => value.id == id);
     if(!item) return null;
@@ -252,17 +244,14 @@ export class TodoServiceStatic {
     // Delete item by setting value at index to undefined
     // Remember: "list" is a reference to "this.items"
     list.splice(list.indexOf(item), 1)
-    localStorage.setItem(TODO_LIST_STORAGE_KEY, JSON.stringify(list));
   }
 
   /**
    * Delete all items
    */
-   public clear(): void {
+  public clear(): void {
     // Delete all items
-    this.items.splice(0, this.items.length)
-    localStorage.removeItem(TODO_LIST_STORAGE_KEY);
-    localStorage.removeItem(TODO_NEXT_ID)
+    this.findAll().splice(0, this.findAll().length)
   }
 
   /**
@@ -272,8 +261,6 @@ export class TodoServiceStatic {
   public nextIncrementedId(): number {
     let nextId: number = Number(localStorage.getItem(TODO_NEXT_ID) || 0) ;
     ++nextId;
-
-    localStorage.setItem(TODO_NEXT_ID, nextId.toString())
     return nextId;
   }
 

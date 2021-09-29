@@ -1,5 +1,6 @@
 
 export interface TodoItemDTO {
+    id?: number;
     title?: string;
     description?: string;
 }

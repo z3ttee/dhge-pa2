@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { TodoItem } from '../models/todo.model';
-import { TodoServiceReactive } from '../services/todo.service';
+import { TodoServiceReactive, TodoServiceStatic } from '../services/todo.service';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 
 @Component({
@@ -15,7 +15,9 @@ export class TodoListComponent implements OnInit {
   // Expose observable to use it in the .component.html file for data-binding
   public items$: Observable<Array<TodoItem>>;
 
-  constructor(public todoService: TodoServiceReactive, private dialog: MatDialog) { }
+  public itemsStatic: TodoItem[];
+
+  constructor(public todoService: TodoServiceReactive, private todoServiceStatic: TodoServiceStatic, private dialog: MatDialog) { }
 
   public ngOnInit(): void {
     // Trigger fetch process
@@ -24,10 +26,14 @@ export class TodoListComponent implements OnInit {
     // Store the observable of the service 
     // inside the component class
     this.items$ = this.todoService.items;
+
+    // Load static elements from service
+    this.itemsStatic = this.todoServiceStatic.findAll();
   }
 
   public deleteAll() {
     this.todoService.clear();
+    this.todoServiceStatic.clear();
   }
 
   public openCreateDialog() {
@@ -38,7 +44,10 @@ export class TodoListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
+        result.id = this.todoService.nextIncrementedId();
+
         this.todoService.add(result)
+        this.todoServiceStatic.add(result)
       }
     });
   }

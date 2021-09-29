@@ -5,11 +5,13 @@
 <mat-divider class="layout-divider"></mat-divider>
 
 <mat-list role="list">
-    <div mat-subheader>Alle TODOs</div>
+    <div mat-subheader>TODO-Liste (Reactiv) >> Diese Liste wird bei Änderungen sofort aktualisiert.</div>
     <app-todo-item *ngFor="let todo of items$ | async" [item]="todo"></app-todo-item>
     <mat-list-item *ngIf="(items$ | async)?.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>
+</mat-list>
 
-    <!--<div mat-subheader>Andere Todos</div>
-    <app-todo-item *ngFor="let todo of otherTodos" [todoData]="todo"></app-todo-item>
-    <mat-list-item *ngIf="otherTodos.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>-->
+<mat-list role="list">
+  <div mat-subheader>TODO-Liste (Statisch) >> Diese Liste wird erst nach neuladen der Seite aktualisiert.</div>
+  <app-todo-item *ngFor="let todo of itemsStatic" [item]="todo"></app-todo-item>
+  <mat-list-item *ngIf="(itemsStatic)?.length <= 0"><mat-icon>info</mat-icon> Keine Ergebnisse gefunden</mat-list-item>
 </mat-list>

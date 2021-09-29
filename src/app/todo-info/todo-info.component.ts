@@ -4,7 +4,7 @@ import { TodoItem } from '../models/todo.model';
 import { Router } from '@angular/router';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 import { MatDialog } from '@angular/material/dialog';
-import { TodoServiceReactive } from '../services/todo.service';
+import { TodoServiceReactive, TodoServiceStatic } from '../services/todo.service';
 
 @Component({
   selector: 'app-todo-info',
@@ -14,13 +14,16 @@ import { TodoServiceReactive } from '../services/todo.service';
 export class TodoInfoComponent implements OnInit {
 
   public item: TodoItem;
+  public itemStatic: TodoItem;
   public currentRouteId: number = 0;
   public show404: boolean = false;
+  public show404Static: boolean = false;
 
   constructor(
     // Use dependency injection to inject our service. 
     // This gurantees that we seperate ui and business logic.
     private todoService: TodoServiceReactive,
+    private todoServiceStatic: TodoServiceStatic,
 
     // We need to read the TODO Item ID from the route, so we have to inject
     // the currently activated route
@@ -63,6 +66,11 @@ export class TodoInfoComponent implements OnInit {
           }
         })*/
     })    
+
+    // Get the static item for visualization
+    const itemId = parseInt(this.route.snapshot.paramMap.get("id"));
+    this.itemStatic = this.todoServiceStatic.findById(itemId);
+    this.show404Static = !this.itemStatic;
   }
 
   public deleteItem() {

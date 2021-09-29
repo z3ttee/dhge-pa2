@@ -6,25 +6,58 @@
   <mat-divider class="layout-divider"></mat-divider>
 </div>
 
-<div *ngIf="show404">
-  <app-error404 [navigateToItem]="currentRouteId"></app-error404>
+<div>
+  <h2>Reactiv</h2>
+  <p>Dieser Abschnitt wird bei Änderungen und Navigation aktualisiert.</p>
+  <div *ngIf="show404">
+    <app-error404 [navigateToItem]="currentRouteId"></app-error404>
+  </div>
+  
+  <div *ngIf="!show404">
+    <div class="todo-info-container">
+      <div class="todo-actions">
+          <button mat-stroked-button (click)="editItem()"><mat-icon>edit</mat-icon> Bearbeiten</button>
+          <button mat-stroked-button color="warn" (click)="deleteItem()"><mat-icon>delete</mat-icon> Löschen</button>
+      </div>
+      
+      <mat-divider class="layout-divider"></mat-divider>
+      
+      <h5>Eintrag ID #{{ item.id }}</h5>
+      <h1>{{ item.title }}</h1>
+  
+      <mat-divider class="layout-divider"></mat-divider>
+  
+      <p>{{ item.description || "Keine Beschreibung vorhanden" }}</p>
+    </div>
+  </div>
 </div>
 
-<div *ngIf="!show404">
-  <div class="todo-info-container">
-    <div class="todo-actions">
-        <button mat-stroked-button (click)="editItem()"><mat-icon>edit</mat-icon> Bearbeiten</button>
-        <button mat-stroked-button color="warn" (click)="deleteItem()"><mat-icon>delete</mat-icon> Löschen</button>
+
+<mat-divider class="layout-divider"></mat-divider>
+
+<div>
+  <h2>Statisch</h2>
+  <p>Dieser Abschnitt wird erst nach neuladen dieser Seite aktualisiert.</p>
+  <div *ngIf="show404Static">
+    <app-error404 [navigateToItem]="currentRouteId"></app-error404>
+  </div>
+
+  <div *ngIf="!show404Static">
+    <div class="todo-info-container">
+      <div class="todo-actions">
+          <button mat-stroked-button (click)="editItem()"><mat-icon>edit</mat-icon> Bearbeiten</button>
+          <button mat-stroked-button color="warn" (click)="deleteItem()"><mat-icon>delete</mat-icon> Löschen</button>
+      </div>
+      
+      <mat-divider class="layout-divider"></mat-divider>
+      
+      <h5>Eintrag ID #{{ itemStatic.id }}</h5>
+      <h1>{{ itemStatic.title }}</h1>
+
+      <mat-divider class="layout-divider"></mat-divider>
+
+      <p>{{ itemStatic.description || "Keine Beschreibung vorhanden" }}</p>
     </div>
-    
-    <mat-divider class="layout-divider"></mat-divider>
-    
-    <h5>Eintrag ID #{{ item.id }}</h5>
-    <h1>{{ item.title }}</h1>
-
-    <mat-divider class="layout-divider"></mat-divider>
-
-    <p>{{ item.description || "Keine Beschreibung vorhanden" }}</p>
   </div>
 </div>
 
