@@ -4,7 +4,6 @@ import { TodoItem } from '../models/todo.model';
 import { Router } from '@angular/router';
 import { TodoCreateComponent } from '../todo-create/todo-create.component';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
 import { TodoServiceReactive } from '../services/todo.service';
 
 @Component({
@@ -73,6 +72,26 @@ export class TodoInfoComponent implements OnInit {
 
   public editItem() {
     this.openEditDialog();
+  }
+
+  public navigateNextEntry() {
+    // Using linked lists here would be much more efficient
+
+    const currentIndex = this.todoService.findIndexById(this.item.id);
+    const nextItem = this.todoService.getAll()[currentIndex + 1];
+    const nextId = nextItem?.id || -1;
+
+    this.router.navigate(['/items', nextId])
+  }
+
+  public navigatePrevEntry() {
+    // Using linked lists here would be much more efficient
+
+    const currentIndex = this.todoService.findIndexById(this.item.id);
+    const prevItem = this.todoService.getAll()[currentIndex - 1];
+    const prevId = prevItem?.id || -1;
+
+    this.router.navigate(['/items', prevId])
   }
 
   public openEditDialog() {

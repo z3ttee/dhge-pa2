@@ -35,6 +35,10 @@ export class TodoServiceReactive {
     });
   }
 
+  public getAll(): TodoItem[] {
+    return this._items$.getValue();
+  }
+
   /**
    * Find an element by its id
    * @param id Id of the element
@@ -42,6 +46,15 @@ export class TodoServiceReactive {
    */
   public findById(id: number): TodoItem {
     return this._items$.getValue().find(((item) => item.id == id));
+  }
+
+  /**
+   * Find the index of an element in the storage list.
+   * @param id Id to lookup
+   * @returns Number
+   */
+  public findIndexById(id: number): number {
+    return this._items$.getValue().findIndex(((item) => item.id == id));
   }
 
   /**

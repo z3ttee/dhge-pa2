@@ -1,7 +1,7 @@
 <div class="todo-pagination-container" *ngIf="!show404">
-  <button mat-stroked-button [routerLink]="['/items', currentRouteId - 1]"><mat-icon>chevron_left</mat-icon> Vorheriger Eintrag</button>
+  <button mat-stroked-button (click)="navigatePrevEntry()"><mat-icon>chevron_left</mat-icon> Vorheriger Eintrag</button>
   <button mat-stroked-button [routerLink]="['/']"><mat-icon>view_list</mat-icon> Zur Startseite</button>
-  <button mat-stroked-button [routerLink]="['/items', currentRouteId + 1]">Nächster Eintrag <mat-icon>chevron_right</mat-icon></button>
+  <button mat-stroked-button (click)="navigateNextEntry()">Nächster Eintrag <mat-icon>chevron_right</mat-icon></button>
 
   <mat-divider class="layout-divider"></mat-divider>
 </div>
